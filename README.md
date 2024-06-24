@@ -12,7 +12,7 @@ This is a general purpose repository but for a simple run
 
 2.  `main.py` represents a simple interface where after the ETL part will run the following algorithms to get a first generic sense:
 	
-	1. SGDOneClassSVM
-	2. LocalOutlierFactor
-	3. IsolationForest
-	4. Simple Neural Net with class weights and Focal loss
+	- SGDOneClassSVM
+	- LocalOutlierFactor
+	- IsolationForest
+	- Simple Neural Net with class weights and Focal loss
