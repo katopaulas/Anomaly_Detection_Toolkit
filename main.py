@@ -1,63 +1,26 @@
-mport os
-import pandas as pd
-from ml import ML
+
+import data_curation
+from ml import  train_svc, train_IF, train_LOF, train_nn, pca_fit, test_nn, test_clf
+
+DATA_MANAGER = data_curation.data_manager()
+CLASSIFIERS = ['IF','LOF','SVM','NN']#'pca',
+            # NOVELTY                    OUTLIER
+clf_dict = {'SVM': train_svc, 'IF':train_IF, 'LOF':train_LOF, 'NN':train_nn} #'pca': pca_fit,
+clf_testers = {'SVM': test_clf,  'IF':test_clf, 'LOF':train_LOF, 'NN':test_nn}
 
 
+#data ETL
+#x_train,y_train,x_test,y_test = DATA_MANAGER.get_trainable_data()
+x_train,y_train,x_test,y_test = DATA_MANAGER.get_trainable_data(norm=1)
 
-
-# Path to .CSV files: Read only
-DATA_PATH = 'csv/'
-# Path to your generated .csv files: Save your .csv files here
-DELIVERABLE_PATH = 'out/'
-# Path to models output: Save your models here
-MODEL_PATH = 'models/'
-
-import warnings
-warnings.filterwarnings("ignore")
-
-##### MAIN SCRIPT
-
-        # DATA EXPLORATION 
-
-
-if __name__ == '__main__':
-
-    # DATA EXPLORATION PHASE
-    ####
-
-    # Load all files from the data path
-    # MAIN_PATH = os.getcwd()
-    # files_main = os.path.join( MAIN_PATH,DATA_PATH,"main.csv")
-
-    # df_main = pd.read_csv(files_main)
-
-    ### reduce data for prototyping
-    #dfm_n = df_main.head(5000)
-    #dfm_n.to_csv('csv_cropped/main.csv',index=False)
-
-    #df_main = pd.read_csv('csv_cropped/main.csv')
-
-
-
-    ### Check nans/ counts / column names
-    #count_nans_per_cols_m = df_main.isna().sum()
-    #print(count_nans_per_cols_m)
-
-    ### Statistics per columns
-    #print(df_main.describe())
-    #df_animals.corr().to_csv('corr_main.csv')
+for clf_name in CLASSIFIERS:
     
-    ### Gather distributions of sightings
-    # df_ufoTrue = df_main.loc[df_main['target'] == True] ### TODO : global or input
-
-    # #df.to_csv('csv_cropped/ufo_main.csv',index=False)
-
-
-    # Actual prepro, prepare data # Trainable_df ~O(N)
-    #DF_with_Y = trainable_df(df_main) # TODO TRANSLATE TO MODERN
-    #DF_with_Y = pd.read_csv('prepro_all.csv')
-    #DF_with_Y = DF_with_Y.drop('Object_animated_n',1).fillna(0)
-    #DF_with_Y['No_Farmers'] = df_main['No_Farmers'].values
-    #DF_with_Y['Y'] = df_main['Is_UFO'].astype(int)
-    #DF_with_Y['is_Raining'] = df_main['is_Raining'].astype(int)
-    #DF_with_Y.corr().to_csv('corr_prepro.csv')
+    trainer = clf_dict[clf_name]
+    tester  = clf_testers[clf_name]
+    
+    #if clf_name in ['SVM','NN']:
+        
+    y_pred_proba,model = trainer(x_train,y_train)
+    print('Predict\n')
+    tester(x_test,y_test,model,name=clf_name)
+    
