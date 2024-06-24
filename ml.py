@@ -42,7 +42,6 @@ def metrics(y_true, y_pred):
     TP,TN,FP,FN = confusion_matrix_stats(y_true, y_pred)
     print('Detected correctly TP ',TP, 'Max on data: ',max_ones )
     print('Detected extra FP',FP, '. Fraction of data they represent: ',FP/len(y_true))
-
     #df_1line_metrics = df_metrics_train[['precision','recall','r_auc', 'balanced_acc','f1-score']].iloc[1,:]
         
     return df
@@ -55,7 +54,7 @@ def mini_metric(y_true, y_pred):
     print('F1: ',f1_score(y_true, y_pred, average='binary'))
     print('pct_anomalies detected:',pct_anomaly)
     print('FN ratio to TP:',FN/(FN+TP))
-    print(('TP','TN','FP','FN'),TP,TN,FP,FN)
+    #print(('TP','TN','FP','FN'),TP,TN,FP,FN)
     print('ROCAUC:',roc_auc_score(y_true,  y_pred))
     print('-'*11)
 
@@ -76,11 +75,10 @@ def pca_fit(x, y, components = 45):
    
 def train_svc(x,y,name=''):
     outliers_fraction=0.15
-    clf = SGDOneClassSVM(nu=outliers_fraction,
-     )
-
+    clf = SGDOneClassSVM(nu=outliers_fraction)
     y_pred = clf.fit_predict(x)
     y_pred[y_pred==-1] = 0
+    
     print(f'{name} finished')
     mini_metric(y,y_pred)
     return y_pred,clf
@@ -90,7 +88,6 @@ def train_LOF(x,y,clf=0,name='LOF'):
     y_pred = clf.fit_predict(x)
     y_pred[y_pred==-1] = 0
 
-    
     print(f'{name} finished')
     mini_metric(y,y_pred)
     return y_pred,clf
@@ -99,6 +96,7 @@ def train_IF(x,y):
     clf = IsolationForest(random_state=0).fit(x)
     y_pred = clf.predict(x)
     y_pred[y_pred==-1] = 0
+   
     print('IF finished F1:')
     mini_metric(y,y_pred)
     return y_pred,clf
